@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="274dp"
+    android:layout_height="134dp"
+    android:layout_marginTop="250dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    android:clipChildren="false">
+
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/satellite_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/satellite_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:src="@drawable/icon_audio_match_planet_big" />
+
+        <ImageView
+            android:id="@+id/satellite_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon_audio_match_planet_small" />
+
+        <ImageView
+            android:id="@+id/satellite_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:rotation="180"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            android:src="@drawable/icon_audio_match_planet_big" />
+
+        <ImageView
+            android:id="@+id/satellite_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:scaleX="0.3"
+            android:scaleY="0.3"
+            android:src="@drawable/icon_audio_match_planet_big" />
+
+        <ImageView
+            android:id="@+id/satellite_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.25"
+            android:scaleX="0.25"
+            android:scaleY="0.25"
+            android:src="@drawable/icon_audio_match_planet_big" />
+
+        <ImageView
+            android:id="@+id/satellite_6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:scaleX="0.3"
+            android:scaleY="0.3"
+            android:src="@drawable/icon_audio_match_planet_small" />
+
+        <ImageView
+            android:id="@+id/satellite_7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.5"
+            android:scaleX="0.85"
+            android:scaleY="0.85"
+            android:src="@drawable/icon_audio_match_planet_small" />
+
+        <ImageView
+            android:id="@+id/satellite_8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rotation="180"
+            android:scaleX="0.2"
+            android:scaleY="0.2"
+            android:src="@drawable/icon_audio_match_planet_big" />
+
+    </FrameLayout>
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/audio_match_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_audio_random_prepare"
+    android:clipChildren="false"
+    tools:context=".MainActivity">
+
+    <include
+        layout="@layout/layout_audio_match_tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        />
+
+    <include
+        layout="@layout/layout_satellite" />
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/layout_audio_match_ufo_light"/>
+
+    <TextView
+        android:id="@+id/audio_random_start"
+        android:layout_width="305dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="114.5dp"
+        android:gravity="center"
+        android:text="Start to match"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp14"
+        android:background="@drawable/bg_btn_audio_random"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/audio_random_remain_tips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Remaining times today:"
+        android:textColor="#9CADD6"
+        android:textSize="@dimen/sp13"
+        app:layout_constraintBottom_toBottomOf="@+id/audio_random_remain_times"
+        app:layout_constraintEnd_toStartOf="@+id/audio_random_remain_times"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/audio_random_remain_times"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/audio_random_remain_times"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp17"
+        android:layout_marginBottom="25dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/audio_random_start"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toEndOf="@+id/audio_random_remain_tips"
+        android:visibility="gone"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/audio_random_go_multi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="45dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/audio_random_go_multi_tips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Click here to try Multi-guest room"
+            android:textColor="#88A8FF"
+            android:textSize="@dimen/sp12"/>
+
+        <ImageView
+            android:id="@+id/audio_random_go_multi_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/audio_random_tips_right"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="2dp"
+            app:layout_constraintLeft_toRightOf="@+id/audio_random_go_multi"
+            app:layout_constraintTop_toTopOf="@+id/audio_random_go_multi"
+            app:layout_constraintBottom_toBottomOf="@id/audio_random_go_multi"
+            />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/im_audio_random_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/audio_random_like"
+        android:layout_marginBottom="5dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_audio_random_status"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/tv_audio_random_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hang up"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp12"
+        android:layout_marginBottom="45dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        />
+
+    <TextView
+        android:id="@+id/audio_random_match"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="It's a match!"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp19"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        />
+
+</android.support.constraint.ConstraintLayout>
