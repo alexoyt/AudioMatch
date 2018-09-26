@@ -9,6 +9,14 @@
     android:clipChildren="false"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:id="@+id/audio_match_bg_light"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/bg_audio_match_light"
+        android:alpha="0"
+        />
+
     <include
         layout="@layout/layout_audio_match_tool_bar"
         android:layout_width="match_parent"

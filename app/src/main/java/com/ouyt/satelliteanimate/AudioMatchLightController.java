@@ -15,65 +15,94 @@ public class AudioMatchLightController {
 
     private Handler handler;
 
-    private static final String TAG = "AudioMatchLightController";
+    private static final String TAG = "LightController";
 
     private View mRootView;
 
     private ImageView mLightView;
     private ImageView mUfoView;
+    private ImageView mRippleLightView;
     private ImageView mRippleInsideView;
     private ImageView mRippleOutside1;
     private ImageView mRippleOutside2;
     private ImageView mRippleOutside3;
+    private ImageView mBackgroundLightView;
     private int mCurrentOutside;
+
+    private ValueAnimator mUfoAnimator;
+    private ValueAnimator mBeforeMatchLightAnimator;
+    private ValueAnimator mMatchingLightAnimator;
+    private LinearInterpolator mLinearInterpolator;
+
+    private boolean mRippleOutsideRunning;
 
     private Runnable mRippleOutsideRunnable = new Runnable() {
         @Override
         public void run() {
-            mCurrentOutside = mCurrentOutside % 3;
+            mCurrentOutside = mCurrentOutside % 4;
             if(mCurrentOutside == 0){
                 startOutsideRippleAnima(mRippleOutside1);
             } else if(mCurrentOutside == 1){
                 startOutsideRippleAnima(mRippleOutside2);
-            } else {
+            } else if(mCurrentOutside == 2) {
                 startOutsideRippleAnima(mRippleOutside3);
             }
             mCurrentOutside++;
             //ThreadUtils.runOnUiThread(this, 520);
-            handler.postDelayed(this, 520);
+            if(mRippleOutsideRunning){
+                handler.postDelayed(this, 520);
+            }
         }
     };
 
     public AudioMatchLightController(View rootView, Handler handler){
         mRootView = rootView;
         this.handler = handler;
+        mLinearInterpolator = new LinearInterpolator();
         initView();
     }
 
     private void initView(){
         mLightView = mRootView.findViewById(R.id.audio_match_light);
         mUfoView = mRootView.findViewById(R.id.audio_match_ufo);
+        mRippleLightView = mRootView.findViewById(R.id.audio_match_ripple_light);
         mRippleInsideView = mRootView.findViewById(R.id.audio_match_ripple_inside);
+        mBackgroundLightView = mRootView.findViewById(R.id.audio_match_bg_light);
         mRippleOutside1 = mRootView.findViewById(R.id.audio_match_ripple_outside_1);
         mRippleOutside2 = mRootView.findViewById(R.id.audio_match_ripple_outside_2);
         mRippleOutside3 = mRootView.findViewById(R.id.audio_match_ripple_outside_3);
     }
 
-    public void startAnima(){
+    public void startBeforMatchAnima(){
         startUFOAnima();
-        startBeforeMacthLightAnima();
-        startRippleAnima();
+        startBeforeMatchLightAnima();
+    }
+
+    public void startMatchingAnima(){
+        mBeforeMatchLightAnimator.cancel();
+        startMatchingLightAnima();
+        startInsideRippleAnima();
+        //ThreadUtils.runOnUiThread(mRippleOutsideRunnable);
+        mRippleOutsideRunning = true;
+        handler.post(mRippleOutsideRunnable);
+    }
+
+    public void stopAllAnimaAndHide(){
+        mUfoAnimator.cancel();
+        mBeforeMatchLightAnimator.cancel();
+        mMatchingLightAnimator.cancel();
+        mRippleOutsideRunning = false;
     }
 
     private void startUFOAnima(){
         UFOEvaluator ufoEvaluator = new UFOEvaluator();
-        ValueAnimator ufoAnimator = ValueAnimator.ofObject(ufoEvaluator, new PointF());
-        ufoAnimator.setDuration(2000);
+        mUfoAnimator = ValueAnimator.ofObject(ufoEvaluator, new PointF());
+        mUfoAnimator.setDuration(2000);
         final float initUFOX = mUfoView.getX();
         final float initUFOY = mUfoView.getY();
         final float initLightX = mLightView.getX();
         final float initLightY = mLightView.getY();
-        ufoAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mUfoAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 PointF position = (PointF)valueAnimator.getAnimatedValue();
@@ -85,27 +114,82 @@ public class AudioMatchLightController {
                 mLightView.invalidate();
             }
         });
-        ufoAnimator.setInterpolator(new LinearInterpolator());
-        ufoAnimator.setRepeatCount(-1);
-        ufoAnimator.start();
+        mUfoAnimator.setInterpolator(mLinearInterpolator);
+        mUfoAnimator.setRepeatCount(-1);
+        mUfoAnimator.start();
     }
 
-    private void startBeforeMacthLightAnima(){
+    private void startBeforeMatchLightAnima(){
         BeforeMatchLightEvaluator lightEvaluator = new BeforeMatchLightEvaluator();
-        ValueAnimator lightAlphaAnimator = ValueAnimator.ofObject(lightEvaluator, 0f);
-        lightAlphaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mBeforeMatchLightAnimator = ValueAnimator.ofObject(lightEvaluator, 0f);
+        mBeforeMatchLightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
                 float alpha = (float)valueAnimator.getAnimatedValue();
                 mLightView.setAlpha(alpha);
+                mRippleLightView.setAlpha(1.5f * alpha + 0.25f);
             }
         });
-        lightAlphaAnimator.setDuration(1400);
-        lightAlphaAnimator.setRepeatCount(-1);
-        lightAlphaAnimator.setInterpolator(new LinearInterpolator());
-        lightAlphaAnimator.start();
-
+        mBeforeMatchLightAnimator.setDuration(1400);
+        mBeforeMatchLightAnimator.setRepeatCount(-1);
+        mBeforeMatchLightAnimator.setInterpolator(mLinearInterpolator);
+        mBeforeMatchLightAnimator.start();
     }
+
+    private void startMatchingLightAnima(){
+        MatchLightEvaluator matchLightEvaluator = new MatchLightEvaluator();
+        mMatchingLightAnimator = ValueAnimator.ofObject(matchLightEvaluator, 0f);
+        mMatchingLightAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float alpha = (float)valueAnimator.getAnimatedValue();
+                mLightView.setAlpha(alpha);
+                mLightView.invalidate();
+            }
+        });
+        mMatchingLightAnimator.setDuration(1200);
+        mMatchingLightAnimator.setRepeatCount(-1);
+        mMatchingLightAnimator.setInterpolator(mLinearInterpolator);
+        mLightView.animate()
+                .alpha(1f)
+                .setDuration(800)
+                .setInterpolator(mLinearInterpolator)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        mMatchingLightAnimator.start();
+                    }
+                });
+        mRippleLightView.animate().alpha(0.8f).setDuration(800).setInterpolator(mLinearInterpolator).start();
+        mBackgroundLightView.animate().alpha(0.8f).setDuration(800).setInterpolator(mLinearInterpolator).start();
+    }
+
+    private void startInsideRippleAnima(){
+        mRippleInsideView.setVisibility(View.VISIBLE);
+        mRippleInsideView.setAlpha(0f);
+        mRippleInsideView.animate().alpha(1f).setDuration(1360).setInterpolator(mLinearInterpolator).start();
+    }
+
+    private void startOutsideRippleAnima(final View view){
+        view.setVisibility(View.VISIBLE);
+        OutsideRippleEvaluator outsideRippleEvaluator = new OutsideRippleEvaluator();
+        ValueAnimator valueAnimator = ValueAnimator.ofObject(outsideRippleEvaluator, 0f);
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float alpha = (float)valueAnimator.getAnimatedValue();
+                view.setAlpha(alpha);
+                view.setScaleX(1.2f * valueAnimator.getAnimatedFraction());
+                view.setScaleY(1.2f * valueAnimator.getAnimatedFraction());
+                view.invalidate();
+            }
+        });
+        valueAnimator.setDuration(1360);
+        valueAnimator.setInterpolator(mLinearInterpolator);
+        valueAnimator.start();
+    }
+
 
     private class UFOEvaluator implements TypeEvaluator<PointF> {
 
@@ -121,7 +205,6 @@ public class AudioMatchLightController {
 
     private class BeforeMatchLightEvaluator implements TypeEvaluator<Float> {
 
-
         @Override
         public Float evaluate(float fraction, Float aFloat, Float t1) {
             fraction = fraction * 1400;
@@ -133,67 +216,6 @@ public class AudioMatchLightController {
                 return 0f;
             }
         }
-    }
-
-    public void startRippleAnima(){
-        startMatchLightAnima();
-        startInsideRippleAnima();
-        //ThreadUtils.runOnUiThread(mRippleOutsideRunnable);
-        handler.post(mRippleOutsideRunnable);
-    }
-
-    private void startMatchLightAnima(){
-        mLightView.setAlpha(0f);
-        MatchLightEvaluator matchLightEvaluator = new MatchLightEvaluator();
-        final ValueAnimator valueAnimator = ValueAnimator.ofObject(matchLightEvaluator, 0f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float alpha = (float)valueAnimator.getAnimatedValue();
-                mLightView.setAlpha(alpha);
-                mLightView.invalidate();
-            }
-        });
-        valueAnimator.setDuration(1200);
-        valueAnimator.setRepeatCount(-1);
-        valueAnimator.setInterpolator(new LinearInterpolator());
-        mLightView.animate()
-                .alpha(1f)
-                .setDuration(800)
-                .setInterpolator(new LinearInterpolator())
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation, boolean isReverse) {
-                        valueAnimator.start();
-                    }
-                });
-    }
-
-    private void startInsideRippleAnima(){
-        mRippleInsideView.setVisibility(View.VISIBLE);
-        mRippleInsideView.setAlpha(0f);
-        mRippleInsideView.animate().alpha(1f).setDuration(1360).setInterpolator(new LinearInterpolator()).start();
-    }
-
-    private void startOutsideRippleAnima(final View view){
-        view.setVisibility(View.VISIBLE);
-        view.setScaleX(0f);
-        view.setScaleY(0f);
-        view.animate().scaleX(1.2f).scaleY(1.2f).setDuration(1360).setInterpolator(new LinearInterpolator()).start();
-
-        OutsideRippleEvaluator outsideRippleEvaluator = new OutsideRippleEvaluator();
-        ValueAnimator valueAnimator = ValueAnimator.ofObject(outsideRippleEvaluator, 0f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                float alpha = (float)valueAnimator.getAnimatedValue();
-                view.setAlpha(alpha);
-                view.invalidate();
-            }
-        });
-        valueAnimator.setDuration(1360);
-        valueAnimator.setInterpolator(new LinearInterpolator());
-        valueAnimator.start();
     }
 
     private class MatchLightEvaluator implements TypeEvaluator<Float> {

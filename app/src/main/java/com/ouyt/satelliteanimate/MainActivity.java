@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,30 +28,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         mSatelliteContainer.post(new Runnable() {
             @Override
             public void run() {
                 mSatelliteController.startAllTrackAnim();
+                mLightController.startBeforMatchAnima();
                 //ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mSatelliteContainer.getLayoutParams();
                 //mSatelliteController.startTrackAnim(mSatelliteContainer.getX(), mSatelliteContainer.getY(), 274, 134);
 
             }
         });
-        mRootView.post(new Runnable() {
+        mSatelliteContainer.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mLightController.startAnima();
+                mLightController.startMatchingAnima();
             }
-        });
-        handler.postDelayed(new Runnable() {
+        }, 5000);
+        mSatelliteContainer.postDelayed(new Runnable() {
             @Override
             public void run() {
-                mLightController.startRippleAnima();
+                mLightController.stopAllAnimaAndHide();
+                mSatelliteController.stopAllTrackAnim();
             }
-        }, 3000);
-
+        }, 15000);
     }
 
     @Override
