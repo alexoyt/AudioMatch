@@ -19,18 +19,18 @@
 
     <include
         layout="@layout/layout_audio_match_tool_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <include
-        layout="@layout/layout_satellite" />
+        layout="@layout/layout_satellite"
+        android:visibility="invisible"
+        />
 
     <include
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        layout="@layout/layout_audio_match_ufo_light"/>
+        layout="@layout/layout_audio_match_ufo_light"
+        android:visibility="invisible"
+        />
 
     <TextView
         android:id="@+id/audio_random_start"
@@ -72,10 +72,10 @@
         android:text="5"
         android:textColor="@color/white"
         android:textSize="@dimen/sp17"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="184.5dp"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/audio_random_start"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/audio_random_remain_tips"
@@ -105,7 +105,7 @@
             android:id="@+id/audio_random_go_multi_arrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/audio_random_tips_right"
+            android:src="@drawable/icon_audio_random_tips_right"
             android:layout_marginLeft="2dp"
             android:layout_marginTop="2dp"
             app:layout_constraintLeft_toRightOf="@+id/audio_random_go_multi"
@@ -119,7 +119,7 @@
         android:id="@+id/im_audio_random_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/audio_random_like"
+        android:src="@drawable/icon_audio_random_like"
         android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toTopOf="@+id/tv_audio_random_status"
         app:layout_constraintRight_toRightOf="parent"
@@ -160,5 +160,9 @@
         app:layout_constraintStart_toStartOf="parent"
         android:visibility="gone"
         />
+
+    <include
+        layout="@layout/layout_audio_match_connecting"/>
+
 
 </android.support.constraint.ConstraintLayout>

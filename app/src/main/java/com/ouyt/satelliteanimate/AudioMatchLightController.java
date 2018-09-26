@@ -92,10 +92,43 @@ public class AudioMatchLightController {
         mBeforeMatchLightAnimator.cancel();
         mMatchingLightAnimator.cancel();
         mRippleOutsideRunning = false;
+
+        mRippleLightView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mRippleInsideView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mRippleOutside1.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mRippleOutside2.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mRippleOutside3.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        startUFOLeaveAnima();
+    }
+
+    private void startUFOLeaveAnima(){
+        UFOEvaluator ufoLeaveEvaluator = new UFOEvaluator(78, 155f, 78, 155f, 640, 0.5f);
+        ValueAnimator ufoLeaveAnimator = ValueAnimator.ofObject(ufoLeaveEvaluator, new PointF());
+        ufoLeaveAnimator.setDuration(320);
+        final float initUFOX = mUfoView.getX();
+        final float initUFOY = mUfoView.getY();
+        final float initLightX = mLightView.getX();
+        final float initLightY = mLightView.getY();
+        ufoLeaveAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                PointF position = (PointF)valueAnimator.getAnimatedValue();
+                mUfoView.setX(initUFOX + position.x);
+                mLightView.setX(initLightX + position.x);
+                mUfoView.setY(initUFOY - position.y);
+                mLightView.setY(initLightY - position.y);
+                mUfoView.setAlpha(1f - valueAnimator.getAnimatedFraction());
+                mLightView.setAlpha(1f - valueAnimator.getAnimatedFraction());
+                mUfoView.invalidate();
+                mLightView.invalidate();
+            }
+        });
+        ufoLeaveAnimator.setInterpolator(mLinearInterpolator);
+        ufoLeaveAnimator.start();
     }
 
     private void startUFOAnima(){
-        UFOEvaluator ufoEvaluator = new UFOEvaluator();
+        UFOEvaluator ufoEvaluator = new UFOEvaluator(4.5f, 11f, 4.5f, 11f, 2000, 1f);
         mUfoAnimator = ValueAnimator.ofObject(ufoEvaluator, new PointF());
         mUfoAnimator.setDuration(2000);
         final float initUFOX = mUfoView.getX();
@@ -108,8 +141,8 @@ public class AudioMatchLightController {
                 PointF position = (PointF)valueAnimator.getAnimatedValue();
                 mUfoView.setX(initUFOX + position.x);
                 mLightView.setX(initLightX + position.x);
-                mUfoView.setY(initUFOY + position.y);
-                mLightView.setY(initLightY + position.y);
+                mUfoView.setY(initUFOY - position.y);
+                mLightView.setY(initLightY - position.y);
                 mUfoView.invalidate();
                 mLightView.invalidate();
             }
@@ -178,6 +211,9 @@ public class AudioMatchLightController {
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                if(!mRippleOutsideRunning){
+                    return;
+                }
                 float alpha = (float)valueAnimator.getAnimatedValue();
                 view.setAlpha(alpha);
                 view.setScaleX(1.2f * valueAnimator.getAnimatedFraction());
@@ -192,19 +228,48 @@ public class AudioMatchLightController {
 
 
     private class UFOEvaluator implements TypeEvaluator<PointF> {
+        private float Ax;
+        private float Ay;
+        private float Kx;
+        private float Ky;
+        private float time;
+        private float rate;
+        /**
+         *  UFO做正弦函数运动，表达式 K * A * sin(2 * PI * x / time - PI / 2)
+         * @param Ax        x正弦函数的振幅
+         * @param Ay        y正弦函数的振幅
+         * @param Kx        x正弦函数的偏距
+         * @param Ky        y正弦函数的偏距
+         * @param time      弦函数的周期
+         * @param rate      运行周期
+         */
+        private UFOEvaluator(float Ax, float Ay, float Kx, float Ky, float time, float rate){
+            this.Ax = Ax;
+            this.Ay = Ay;
+            this.Kx = Kx;
+            this.Ky = Ky;
+            this.time = time;
+            this.rate = rate;
+        }
 
         @Override
         public PointF evaluate(float fraction, PointF aFloat, PointF t1) {
-            fraction = fraction * 2000;
+            fraction = fraction * time * rate;
             PointF p = new PointF();
-            p.x = 4.5f + (float)(4.5f * Math.sin(Math.PI * fraction / 1000 - Math.PI / 2));
-            p.y = 11f + (float)(11f * Math.sin(Math.PI * fraction / 1000 - Math.PI / 2));
+            p.x = Kx + (float)(Ax * Math.sin(2 * Math.PI * fraction / time - Math.PI / 2));
+            p.y = Ky + (float)(Ay * Math.sin(2 * Math.PI * fraction / time - Math.PI / 2));
             return p;
         }
     }
 
     private class BeforeMatchLightEvaluator implements TypeEvaluator<Float> {
 
+        /**
+         *  开始匹配前探照灯透明曲线：
+         *  y = 0.1 * x / 400               x <= 400
+         *  y = - 0.2 * x / 800 + 0.2      400 < x <= 800
+         *  y = 0                          800 <= x <= 1400
+         */
         @Override
         public Float evaluate(float fraction, Float aFloat, Float t1) {
             fraction = fraction * 1400;
@@ -220,6 +285,11 @@ public class AudioMatchLightController {
 
     private class MatchLightEvaluator implements TypeEvaluator<Float> {
 
+        /**
+         *  匹配过程探照灯透明度曲线：
+         *  y = -1 * x / 1200 + 1              x <= 600
+         *  y = 1 * x / 1200                   600 < x <= 1200
+         */
         @Override
         public Float evaluate(float fraction, Float aFloat, Float t1) {
             fraction = fraction * 1200;
@@ -232,7 +302,11 @@ public class AudioMatchLightController {
     }
 
     private class OutsideRippleEvaluator implements TypeEvaluator<Float> {
-
+        /**
+         *  搜索波纹单圈放大曲线：
+         *  y = 0.8 * x / 480              x <= 480
+         *  y = -0.8 * x / 880 + 68 / 55                  480 < x <= 1360
+         */
         @Override
         public Float evaluate(float fraction, Float aFloat, Float t1) {
             fraction = fraction * 1360;

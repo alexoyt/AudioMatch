@@ -1,5 +1,7 @@
 package com.ouyt.satelliteanimate;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.graphics.PointF;
@@ -7,6 +9,7 @@ import android.support.constraint.ConstraintLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ public class AudioMatchSatelliteController {
 
     private View mRootView;
 
+    private FrameLayout mSatelliteContainer;
     private ImageView mSatellite1;
     private ImageView mSatellite2;
     private ImageView mSatellite3;
@@ -29,28 +33,31 @@ public class AudioMatchSatelliteController {
     private ImageView mSatellite7;
     private ImageView mSatellite8;
 
-    private List<ValueAnimator> valueAnimatorList;
+    private List<ValueAnimator> mValueAnimatorList;
+    private LinearInterpolator mLinearInterpolator;
 
     public AudioMatchSatelliteController(View rootView){
         mRootView = rootView;
-        valueAnimatorList = new ArrayList<>();
+        mValueAnimatorList = new ArrayList<>();
+        mLinearInterpolator = new LinearInterpolator();
         initView();
     }
 
     private void initView(){
-        mSatellite1 = mRootView.findViewById(R.id.satellite_1);
-        mSatellite2 = mRootView.findViewById(R.id.satellite_2);
-        mSatellite3 = mRootView.findViewById(R.id.satellite_3);
-        mSatellite4 = mRootView.findViewById(R.id.satellite_4);
-        mSatellite5 = mRootView.findViewById(R.id.satellite_5);
-        mSatellite6 = mRootView.findViewById(R.id.satellite_6);
-        mSatellite7 = mRootView.findViewById(R.id.satellite_7);
-        mSatellite8 = mRootView.findViewById(R.id.satellite_8);
+        mSatelliteContainer = mRootView.findViewById(R.id.satellite_container);
+        mSatellite1 = mSatelliteContainer.findViewById(R.id.satellite_1);
+        mSatellite2 = mSatelliteContainer.findViewById(R.id.satellite_2);
+        mSatellite3 = mSatelliteContainer.findViewById(R.id.satellite_3);
+        mSatellite4 = mSatelliteContainer.findViewById(R.id.satellite_4);
+        mSatellite5 = mSatelliteContainer.findViewById(R.id.satellite_5);
+        mSatellite6 = mSatelliteContainer.findViewById(R.id.satellite_6);
+        mSatellite7 = mSatelliteContainer.findViewById(R.id.satellite_7);
+        mSatellite8 = mSatelliteContainer.findViewById(R.id.satellite_8);
     }
 
     public void startAllTrackAnim(){
-        int a = mRootView.getWidth() / 2;
-        int b = mRootView.getHeight() / 2;
+        int a = mSatelliteContainer.getWidth() / 2;
+        int b = mSatelliteContainer.getHeight() / 2;
         startTrackAnim(mSatellite1,a * 1.0f,b * 1.0f, 36000, -123);
         startTrackAnim(mSatellite2,a * 0.9f,b * 0.9f, 37000, -11);
         startTrackAnim(mSatellite3,a * 1.0f,b * 1.0f, 30000, 31);
@@ -61,18 +68,23 @@ public class AudioMatchSatelliteController {
         startTrackAnim(mSatellite8,a * 0.4f,b * 0.4f, 30000, -33);
     }
 
-    public void stopAllTrackAnim(){
-        for(ValueAnimator valueAnimator : valueAnimatorList){
+    public void stopAllTrackAnimAndHide(){
+        for(ValueAnimator valueAnimator : mValueAnimatorList){
             if(valueAnimator != null){
                 valueAnimator.cancel();
             }
         }
+        mSatelliteContainer.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
     }
 
     private void startTrackAnim(final View view, float a, float b, int duration, float startAngle) {
         TypeEvaluator<PointF> evaluator = new OvalTypeEvaluator(a, b, startAngle);
         ValueAnimator anim = ValueAnimator.ofObject(evaluator, new PointF());
         anim.setDuration(duration);
+        final float relativeDotx = mSatelliteContainer.getWidth() / 2;
+        final float relativeDoty = mSatelliteContainer.getHeight() / 2;
+        final float offsetX = view.getWidth() / 2;
+        final float offsetY = view.getHeight() / 2;
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -80,15 +92,15 @@ public class AudioMatchSatelliteController {
                 PointF roundPoint = (PointF) animation.getAnimatedValue();
                 float originX = roundPoint.x;
                 float originY = roundPoint.y;
-                view.setX((float)((originX * Math.cos(LEAN_ANGLE) - originY * Math.sin(LEAN_ANGLE)) + mRootView.getX() + mRootView.getWidth() / 2) - view.getWidth() / 2);
-                view.setY((float)((originX * Math.sin(LEAN_ANGLE) + originY * Math.cos(LEAN_ANGLE)) + mRootView.getY() + mRootView.getHeight() / 2) - view.getHeight() / 2);
+                view.setX((float)((originX * Math.cos(LEAN_ANGLE) - originY * Math.sin(LEAN_ANGLE)) + relativeDotx) - offsetX);
+                view.setY((float)((originX * Math.sin(LEAN_ANGLE) + originY * Math.cos(LEAN_ANGLE)) + relativeDoty) - offsetY);
                 view.invalidate();
             }
         });
-        anim.setInterpolator(new LinearInterpolator());
+        anim.setInterpolator(mLinearInterpolator);
         anim.setRepeatCount(-1);
         anim.start();
-        valueAnimatorList.add(anim);
+        mValueAnimatorList.add(anim);
     }
 
     private class OvalTypeEvaluator implements TypeEvaluator<PointF> {
@@ -96,11 +108,15 @@ public class AudioMatchSatelliteController {
         private float a;//椭圆长半轴
         private float b;//椭圆短半轴
         private float startAngle;//椭圆初始偏移
-
         /**
-         *
+         * 椭圆标准公式x^2 / a^2 + y^2 / b^2 = 1 其中 x = a * cos(x); y = b * sin(y);
+         * XOY坐标变换到UOV后
+         * x = U * COS(θ) - V * SIN(θ) + S
+         * y = U * SIN(θ) + V * COS(θ) + T
+         * 其中UOV的圆点在XOY坐标为(S,T)
          * @param a 椭圆长半轴
          * @param b 椭圆短半轴
+         * @param startAngle 初始运动角度
          */
         public OvalTypeEvaluator(float a,float b, float startAngle) {
             this.a = a;
