@@ -56,6 +56,7 @@ public class AudioMatchSatelliteController {
     }
 
     public void startAllTrackAnim(){
+        mSatelliteContainer.setVisibility(View.VISIBLE);
         int a = mSatelliteContainer.getWidth() / 2;
         int b = mSatelliteContainer.getHeight() / 2;
         startTrackAnim(mSatellite1,a * 1.0f,b * 1.0f, 36000, -123);

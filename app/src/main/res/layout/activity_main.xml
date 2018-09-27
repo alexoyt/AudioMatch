@@ -27,19 +27,13 @@
         />
 
     <include
-        layout="@layout/layout_audio_match_tool_bar"
-        android:visibility="invisible"
-        />
+        layout="@layout/layout_audio_match_tool_bar" />
 
     <include
-        layout="@layout/layout_satellite"
-        android:visibility="invisible"
-        />
+        layout="@layout/layout_satellite" />
 
     <include
-        layout="@layout/layout_audio_match_ufo_light"
-        android:visibility="invisible"
-        />
+        layout="@layout/layout_audio_match_ufo_light" />
 
     <include
         layout="@layout/layout_audio_match_connect"/>
@@ -145,7 +139,7 @@
         android:id="@+id/tv_audio_random_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hang up"
+        android:text="LIKE"
         android:textColor="@color/white"
         android:textSize="@dimen/sp12"
         android:layout_marginBottom="45dp"

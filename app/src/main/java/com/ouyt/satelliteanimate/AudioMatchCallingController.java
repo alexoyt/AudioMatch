@@ -160,6 +160,7 @@ public class AudioMatchCallingController {
 
         initTouchMeteorCreated();
         initLikeStatusAnima();
+        //handler.post(mShowSuccessHeartRunnable);
     }
 
     private void showMatchSuccessHeartView(boolean firstHeart){

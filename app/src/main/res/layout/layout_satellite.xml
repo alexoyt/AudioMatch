@@ -17,7 +17,9 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/satellite_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        >
 
         <ImageView
             android:id="@+id/satellite_1"

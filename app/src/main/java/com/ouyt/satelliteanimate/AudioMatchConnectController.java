@@ -31,6 +31,7 @@ public class AudioMatchConnectController {
     private TextView mCountTimeView;
     private TextView mConnectingTipsView;
     private ImageView mAvatarRippleView;
+    private ImageView mBackgroundLightView;
 
     private Handler handler;
     private int mCountTime = 3;
@@ -39,6 +40,7 @@ public class AudioMatchConnectController {
     private ValueAnimator mRippleAlphaAnimator;
     private ValueAnimator mRippleScaleAnimator;
 
+    private AudioMatchCallingController mCallingController;
 
     private Runnable mCountTimeRunnable = new Runnable() {
         @Override
@@ -51,6 +53,7 @@ public class AudioMatchConnectController {
                 handler.postDelayed(this, 1000);
             } else {
                 stopAnimaAndHide();
+                mCallingController.startCallingAnima();
             }
             mCountTime--;
         }
@@ -61,6 +64,7 @@ public class AudioMatchConnectController {
         this.handler = handler;
         mLinearInterpolator = new LinearInterpolator();
         mValueAnimatorList = new ArrayList<>();
+        mCallingController = new AudioMatchCallingController(mRootView, handler);
         initView();
     }
 
@@ -73,6 +77,7 @@ public class AudioMatchConnectController {
         mCountTimeView = mRootView.findViewById(R.id.audio_match_connecting_count_time);
         mConnectingTipsView = mRootView.findViewById(R.id.audio_match_connecting_tips);
         mAvatarRippleView = mRootView.findViewById(R.id.audio_match_avatar_ripple);
+        mBackgroundLightView = mRootView.findViewById(R.id.audio_match_bg_light);
     }
 
     public void startConnectingAnima(){
@@ -194,8 +199,10 @@ public class AudioMatchConnectController {
     public void stopAnimaAndHide(){
         mRippleAlphaAnimator.cancel();
         mRippleScaleAnimator.cancel();
-        mCountTimeView.setVisibility(View.GONE);
-        mConnectingTipsView.setVisibility(View.GONE);
+        mBackgroundLightView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mCountTimeView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mConnectingTipsView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mAvatarRippleView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
         AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
         scaleAndAlphaAnima(mSatelliteContainer, 1f, 1.6f, interpolator, 1f, 0f ,mLinearInterpolator, 200);
         for(ValueAnimator valueAnimator : mValueAnimatorList){

@@ -9,9 +9,11 @@ import android.os.Handler;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toolbar;
 
 
-public class AudioMatchLightController {
+public class AudioMatchLightController implements View.OnClickListener{
 
     private Handler handler;
 
@@ -27,12 +29,15 @@ public class AudioMatchLightController {
     private ImageView mRippleOutside2;
     private ImageView mRippleOutside3;
     private ImageView mBackgroundLightView;
+    private TextView mStartMatchView;
     private int mCurrentOutside;
 
     private ValueAnimator mUfoAnimator;
     private ValueAnimator mBeforeMatchLightAnimator;
     private ValueAnimator mMatchingLightAnimator;
     private LinearInterpolator mLinearInterpolator;
+    private AudioMatchSatelliteController mSatelliteController;
+    private AudioMatchConnectController mConnectingController;
 
     private boolean mRippleOutsideRunning;
 
@@ -58,22 +63,48 @@ public class AudioMatchLightController {
     public AudioMatchLightController(View rootView, Handler handler){
         mRootView = rootView;
         this.handler = handler;
+        mSatelliteController = new AudioMatchSatelliteController(mRootView);
+        mConnectingController = new AudioMatchConnectController(mRootView, handler);
         mLinearInterpolator = new LinearInterpolator();
         initView();
     }
 
+    private TextView mRemainTipsView;
+    private TextView mRematinTimeView;
+    private View mMultiGuestTipsView;
+    private View mToolBar;
     private void initView(){
         mLightView = mRootView.findViewById(R.id.audio_match_light);
         mUfoView = mRootView.findViewById(R.id.audio_match_ufo);
         mRippleLightView = mRootView.findViewById(R.id.audio_match_ripple_light);
-        mRippleInsideView = mRootView.findViewById(R.id.audio_match_ripple_inside);
         mBackgroundLightView = mRootView.findViewById(R.id.audio_match_bg_light);
+        mRippleInsideView = mRootView.findViewById(R.id.audio_match_ripple_inside);
         mRippleOutside1 = mRootView.findViewById(R.id.audio_match_ripple_outside_1);
         mRippleOutside2 = mRootView.findViewById(R.id.audio_match_ripple_outside_2);
         mRippleOutside3 = mRootView.findViewById(R.id.audio_match_ripple_outside_3);
+
+        mToolBar = mRootView.findViewById(R.id.audio_match_tool_tar_container);
+        mStartMatchView = mRootView.findViewById(R.id.audio_random_start);
+        mRemainTipsView = mRootView.findViewById(R.id.audio_random_remain_tips);
+        mRematinTimeView = mRootView.findViewById(R.id.audio_random_remain_times);
+        mToolBar = mRootView.findViewById(R.id.audio_match_tool_tar_container);
+        mMultiGuestTipsView = mRootView.findViewById(R.id.audio_random_go_multi);
+
+        mLightView.setVisibility(View.VISIBLE);
+        mUfoView.setVisibility(View.VISIBLE);
+        mRippleLightView.setVisibility(View.VISIBLE);
+        mBackgroundLightView.setVisibility(View.VISIBLE);
+        mToolBar.setVisibility(View.VISIBLE);
+        mStartMatchView.setVisibility(View.VISIBLE);
+        mRemainTipsView.setVisibility(View.VISIBLE);
+        mRematinTimeView.setVisibility(View.VISIBLE);
+        mMultiGuestTipsView.setVisibility(View.VISIBLE);
+
+        mStartMatchView.setOnClickListener(this);
     }
 
     public void startBeforMatchAnima(){
+        mSatelliteController.startAllTrackAnim();
         startUFOAnima();
         startBeforeMatchLightAnima();
     }
@@ -85,9 +116,21 @@ public class AudioMatchLightController {
         //ThreadUtils.runOnUiThread(mRippleOutsideRunnable);
         mRippleOutsideRunning = true;
         handler.post(mRippleOutsideRunnable);
+
+        mRemainTipsView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mRematinTimeView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mStartMatchView.setText("Cancel");
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                stopAllAnimaAndHide();
+                mConnectingController.startConnectingAnima();
+            }
+        }, 3000);
     }
 
     public void stopAllAnimaAndHide(){
+        mSatelliteController.stopAllTrackAnimAndHide();
         mUfoAnimator.cancel();
         mBeforeMatchLightAnimator.cancel();
         mMatchingLightAnimator.cancel();
@@ -98,6 +141,10 @@ public class AudioMatchLightController {
         mRippleOutside1.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
         mRippleOutside2.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
         mRippleOutside3.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mToolBar.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mStartMatchView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+        mMultiGuestTipsView.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
+
         startUFOLeaveAnima();
     }
 
@@ -226,6 +273,14 @@ public class AudioMatchLightController {
         valueAnimator.start();
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.audio_random_start:
+                startMatchingAnima();
+                break;
+        }
+    }
 
     private class UFOEvaluator implements TypeEvaluator<PointF> {
         private float Ax;
@@ -316,7 +371,6 @@ public class AudioMatchLightController {
                 return - 0.8f / 880 * fraction + 68f/55f;
             }
         }
-
     }
 
 }

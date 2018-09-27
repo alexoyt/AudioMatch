@@ -13,7 +13,7 @@
         android:src="@drawable/bg_audio_match_big_planet"
         android:scaleType="centerCrop"
         app:layout_constraintTop_toTopOf="@id/audio_match_other_avatar"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <ImageView
@@ -149,7 +149,7 @@
         app:layout_constraintRight_toLeftOf="@+id/audio_match_other_name"
         app:layout_constraintEnd_toStartOf="@+id/audio_match_other_name"
         app:layout_constraintHorizontal_chainStyle="packed"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <TextView
@@ -182,7 +182,7 @@
         app:layout_constraintLeft_toRightOf="@+id/audio_match_my_name"
         app:layout_constraintStart_toEndOf="@+id/audio_match_my_name"
         app:layout_constraintHorizontal_chainStyle="packed"
-        android:visibility="visible"
+        android:visibility="invisible"
         />
 
     <TextView
