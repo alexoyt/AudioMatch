@@ -12,15 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-
+/**
+ * 飞船和探照灯相关动画控制器
+ */
 public class AudioMatchLightController implements View.OnClickListener{
-
-    private Handler handler;
 
     private static final String TAG = "LightController";
 
     private View mRootView;
-
     private ImageView mLightView;
     private ImageView mUfoView;
     private ImageView mRippleLightView;
@@ -30,17 +29,27 @@ public class AudioMatchLightController implements View.OnClickListener{
     private ImageView mRippleOutside3;
     private ImageView mBackgroundLightView;
     private TextView mStartMatchView;
-    private int mCurrentOutside;
+    private TextView mRemainTipsView;
+    private TextView mRematinTimeView;
+    private View mMultiGuestTipsView;
+    private View mToolBar;
+
+    private Handler handler;
 
     private ValueAnimator mUfoAnimator;
     private ValueAnimator mBeforeMatchLightAnimator;
     private ValueAnimator mMatchingLightAnimator;
+
     private LinearInterpolator mLinearInterpolator;
     private AudioMatchSatelliteController mSatelliteController;
     private AudioMatchConnectController mConnectingController;
 
+    private int mCurrentOutside;
     private boolean mRippleOutsideRunning;
 
+    /**
+     *  循环依次启动外围探照波纹动画
+     */
     private Runnable mRippleOutsideRunnable = new Runnable() {
         @Override
         public void run() {
@@ -69,10 +78,6 @@ public class AudioMatchLightController implements View.OnClickListener{
         initView();
     }
 
-    private TextView mRemainTipsView;
-    private TextView mRematinTimeView;
-    private View mMultiGuestTipsView;
-    private View mToolBar;
     private void initView(){
         mLightView = mRootView.findViewById(R.id.audio_match_light);
         mUfoView = mRootView.findViewById(R.id.audio_match_ufo);
@@ -103,12 +108,18 @@ public class AudioMatchLightController implements View.OnClickListener{
         mStartMatchView.setOnClickListener(this);
     }
 
+    /**
+     * 启动点击匹配前的动画
+     */
     public void startBeforMatchAnima(){
         mSatelliteController.startAllTrackAnim();
         startUFOAnima();
         startBeforeMatchLightAnima();
     }
 
+    /**
+     * 启动匹配过程的动画
+     */
     public void startMatchingAnima(){
         mBeforeMatchLightAnimator.cancel();
         startMatchingLightAnima();
@@ -129,6 +140,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         }, 3000);
     }
 
+    /**
+     * 停止飞船/探照灯/波纹等动画，并且隐藏
+     */
     public void stopAllAnimaAndHide(){
         mSatelliteController.stopAllTrackAnimAndHide();
         mUfoAnimator.cancel();
@@ -148,6 +162,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         startUFOLeaveAnima();
     }
 
+    /**
+     * 飞船飞走动画
+     */
     private void startUFOLeaveAnima(){
         UFOEvaluator ufoLeaveEvaluator = new UFOEvaluator(78, 155f, 78, 155f, 640, 0.5f);
         ValueAnimator ufoLeaveAnimator = ValueAnimator.ofObject(ufoLeaveEvaluator, new PointF());
@@ -174,6 +191,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         ufoLeaveAnimator.start();
     }
 
+    /**
+     * 飞船和探照灯上下运动动画
+     */
     private void startUFOAnima(){
         UFOEvaluator ufoEvaluator = new UFOEvaluator(4.5f, 11f, 4.5f, 11f, 2000, 1f);
         mUfoAnimator = ValueAnimator.ofObject(ufoEvaluator, new PointF());
@@ -199,6 +219,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         mUfoAnimator.start();
     }
 
+    /**
+     * 点击匹配前探照灯闪烁动画
+     */
     private void startBeforeMatchLightAnima(){
         BeforeMatchLightEvaluator lightEvaluator = new BeforeMatchLightEvaluator();
         mBeforeMatchLightAnimator = ValueAnimator.ofObject(lightEvaluator, 0f);
@@ -216,6 +239,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         mBeforeMatchLightAnimator.start();
     }
 
+    /**
+     * 匹配过程中探照灯闪烁动画
+     */
     private void startMatchingLightAnima(){
         MatchLightEvaluator matchLightEvaluator = new MatchLightEvaluator();
         mMatchingLightAnimator = ValueAnimator.ofObject(matchLightEvaluator, 0f);
@@ -245,12 +271,18 @@ public class AudioMatchLightController implements View.OnClickListener{
         mBackgroundLightView.animate().alpha(0.8f).setDuration(800).setInterpolator(mLinearInterpolator).start();
     }
 
+    /**
+     * 内圈探照波纹现实动画
+     */
     private void startInsideRippleAnima(){
         mRippleInsideView.setVisibility(View.VISIBLE);
         mRippleInsideView.setAlpha(0f);
         mRippleInsideView.animate().alpha(1f).setDuration(1360).setInterpolator(mLinearInterpolator).start();
     }
 
+    /**
+     * 外圈探照波纹现实动画
+     */
     private void startOutsideRippleAnima(final View view){
         view.setVisibility(View.VISIBLE);
         OutsideRippleEvaluator outsideRippleEvaluator = new OutsideRippleEvaluator();
@@ -282,6 +314,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         }
     }
 
+    /**
+     * 计算飞船和探照灯上下运动的值
+     */
     private class UFOEvaluator implements TypeEvaluator<PointF> {
         private float Ax;
         private float Ay;
@@ -317,6 +352,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         }
     }
 
+    /**
+     * 计算开始匹配前探照灯透明变化的值
+     */
     private class BeforeMatchLightEvaluator implements TypeEvaluator<Float> {
 
         /**
@@ -338,6 +376,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         }
     }
 
+    /**
+     * 计算匹配过程探照灯透明度变化的值
+     */
     private class MatchLightEvaluator implements TypeEvaluator<Float> {
 
         /**
@@ -356,6 +397,9 @@ public class AudioMatchLightController implements View.OnClickListener{
         }
     }
 
+    /**
+     * 计算外围探照波纹scale变化的值
+     */
     private class OutsideRippleEvaluator implements TypeEvaluator<Float> {
         /**
          *  搜索波纹单圈放大曲线：

@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * 星球运动动画控制器
+ */
 public class AudioMatchSatelliteController {
 
     private static final String TAG = "AudioMatchSatelliteController";
@@ -55,6 +58,9 @@ public class AudioMatchSatelliteController {
         mSatellite8 = mSatelliteContainer.findViewById(R.id.satellite_8);
     }
 
+    /**
+     * 开始星球公转动画
+     */
     public void startAllTrackAnim(){
         mSatelliteContainer.setVisibility(View.VISIBLE);
         int a = mSatelliteContainer.getWidth() / 2;
@@ -69,6 +75,9 @@ public class AudioMatchSatelliteController {
         startTrackAnim(mSatellite8,a * 0.4f,b * 0.4f, 30000, -33);
     }
 
+    /**
+     * 停止所有动画
+     */
     public void stopAllTrackAnimAndHide(){
         for(ValueAnimator valueAnimator : mValueAnimatorList){
             if(valueAnimator != null && valueAnimator.isRunning()){
@@ -78,13 +87,21 @@ public class AudioMatchSatelliteController {
         mSatelliteContainer.animate().alpha(0f).setDuration(280).setInterpolator(mLinearInterpolator).start();
     }
 
+    /**
+     * 单个星球运动动画，轨迹为椭圆
+     * @param view  运动的view
+     * @param a     椭圆长半轴
+     * @param b     椭圆短半轴
+     * @param duration  运动一周时长
+     * @param startAngle    view在椭圆的起始位置
+     */
     private void startTrackAnim(final View view, float a, float b, int duration, float startAngle) {
         TypeEvaluator<PointF> evaluator = new OvalTypeEvaluator(a, b, startAngle);
         ValueAnimator anim = ValueAnimator.ofObject(evaluator, new PointF());
         anim.setDuration(duration);
-        final float relativeDotx = mSatelliteContainer.getWidth() / 2;
+        final float relativeDotx = mSatelliteContainer.getWidth() / 2;  //原点坐标相对位置
         final float relativeDoty = mSatelliteContainer.getHeight() / 2;
-        final float offsetX = view.getWidth() / 2;
+        final float offsetX = view.getWidth() / 2;  //星球view中心偏移量
         final float offsetY = view.getHeight() / 2;
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -104,13 +121,16 @@ public class AudioMatchSatelliteController {
         mValueAnimatorList.add(anim);
     }
 
+    /**
+     * 计算单个星球椭圆运动轨迹的坐标值
+     */
     private class OvalTypeEvaluator implements TypeEvaluator<PointF> {
 
         private float a;//椭圆长半轴
         private float b;//椭圆短半轴
         private float startAngle;//椭圆初始偏移
         /**
-         * 椭圆标准公式x^2 / a^2 + y^2 / b^2 = 1 其中 x = a * cos(x); y = b * sin(y);
+         * 椭圆标准公式x^2 / a^2 + y^2 / b^2 = 1 其中 x = a * cos(θ); y = b * sin(θ);
          * XOY坐标变换到UOV后
          * x = U * COS(θ) - V * SIN(θ) + S
          * y = U * SIN(θ) + V * COS(θ) + T

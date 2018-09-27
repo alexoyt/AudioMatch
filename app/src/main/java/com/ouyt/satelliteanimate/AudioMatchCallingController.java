@@ -22,29 +22,35 @@ public class AudioMatchCallingController {
 
     private static final String TAG = "CallingController";
 
-    private View mRootView;
     private LinearInterpolator mLinearInterpolator;
+    private DecelerateInterpolator mDecelerateInterpolator;
 
+    private View mRootView;
     private ImageView mMyAvatarView;
     private ImageView mOtherAvatarView;
+    private ImageView mIvLikeStatus;
+    private ImageView mBigPlanetView;
+    private ImageView mScatteredPlanetView;
+    private ImageView mCloseView;
     private TextView mMyNameView;
     private TextView mMyCountryView;
     private TextView mOtherNameView;
     private TextView mOtherCountryView;
     private TextView mCountTime;
     private TextView mTvLikeStatus;
-    private ImageView mIvLikeStatus;
-    private ImageView mBigPlanetView;
-    private ImageView mScatteredPlanetView;
-    private ImageView mCloseView;
 
     private Handler handler;
     private boolean isShowMeteor = true;
-    private int mCurrentMeteor;
     private boolean isLikeStatusAnimating;
+    private int mCurrentMeteor;
     private int mLikeStatusPhase;
     private int mMatchSuccessHeartStatus;
 
+    private ValueAnimator mHeartSendAnimator;
+
+    /**
+     * 循环显示匹配成功后，背景的流星动画
+     */
     private Runnable mMeteorShowRunnable = new Runnable() {
         @Override
         public void run() {
@@ -68,6 +74,9 @@ public class AudioMatchCallingController {
         }
     };
 
+    /**
+     * 连续点击like按钮执行的动画
+     */
     private Runnable mLikeContinuousClickRunnable = new Runnable() {
         @Override
         public void run() {
@@ -81,6 +90,10 @@ public class AudioMatchCallingController {
             mLikeStatusPhase++;
         }
     };
+
+    /**
+     * 初次点击like按钮执行的动画
+     */
     private Runnable mLikeFirstClickRunnable = new Runnable() {
         @Override
         public void run() {
@@ -98,6 +111,9 @@ public class AudioMatchCallingController {
     };
 
 
+    /**
+     * 循环显示匹配成功后爱心view
+     */
     private Runnable mShowSuccessHeartRunnable = new Runnable() {
         @Override
         public void run() {
@@ -117,6 +133,7 @@ public class AudioMatchCallingController {
         mRootView = rootView;
         this.handler = handler;
         mLinearInterpolator = new LinearInterpolator();
+        mDecelerateInterpolator = new DecelerateInterpolator();
         initView();
     }
 
@@ -135,8 +152,14 @@ public class AudioMatchCallingController {
         mCloseView = mRootView.findViewById(R.id.audio_match_close);
     }
 
+    public void stopCallingAnima(){
+        mHeartSendAnimator.cancel();
+    }
+
+    /**
+     * 匹配成功后启动动画
+     */
     public void startCallingAnima(){
-        handler.post(mMeteorShowRunnable);
 
         initVisible();
         alphaAnima(mCloseView, 0f, 1f, mLinearInterpolator, 280, 320, null);
@@ -152,17 +175,22 @@ public class AudioMatchCallingController {
         scaleAnima(mIvLikeStatus, 0f ,1f, new DecelerateInterpolator(), 600, 0, null);
         scaleAnima(mTvLikeStatus, 0f ,1f, new DecelerateInterpolator(), 600, 0, null);
 
-        avatartTranslateAnima();
+        avatarTranslateAnima();
 
         Animation animation = AnimationUtils.loadAnimation(mBigPlanetView.getContext(), R.anim.audio_match_big_planet);
-        mBigPlanetView.startAnimation(animation);
+        mBigPlanetView.startAnimation(animation);   //加载大星球旋转缩放变换动画
 
+        handler.post(mMeteorShowRunnable);
 
         initTouchMeteorCreated();
         initLikeStatusAnima();
         //handler.post(mShowSuccessHeartRunnable);
     }
 
+    /**
+     * 创建配对成功后的爱心浮现动画
+     * @param firstHeart    是否是第一个爱心
+     */
     private void showMatchSuccessHeartView(boolean firstHeart){
         final ImageView heartView = new ImageView(mRootView.getContext());
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
@@ -170,8 +198,10 @@ public class AudioMatchCallingController {
         heartView.setImageResource(R.drawable.icon_audio_match_like_heart);
         final ViewGroup parentView = (ViewGroup) mMyAvatarView.getParent();
         parentView.addView(heartView);
-        heartView.setX(mMyAvatarView.getX() + mMyAvatarView.getWidth() / 2 + (mOtherAvatarView.getX() - mMyAvatarView.getX()) / 2 - dp2px(20));
-        heartView.setY(mMyAvatarView.getY() + mMyAvatarView.getHeight() / 2 - dp2px(32));
+        float startX = mMyAvatarView.getX() + mMyAvatarView.getWidth() / 2 + (mOtherAvatarView.getX() - mMyAvatarView.getX()) / 2 - dp2px(20);
+        float startY = mMyAvatarView.getY() + mMyAvatarView.getHeight() / 2 - dp2px(32);
+        heartView.setX(startX);
+        heartView.setY(startY);
         float offsetX = firstHeart ? dp2px(-7) : dp2px(7);
         float offsetY = -dp2px(100);
         heartView.animate().translationXBy(offsetX).translationYBy(offsetY).setInterpolator(mLinearInterpolator).setDuration(1040).withEndAction(new Runnable() {
@@ -197,6 +227,9 @@ public class AudioMatchCallingController {
 
     }
 
+    /**
+     * 初始化点击like的动画和事件
+     */
     private void initLikeStatusAnima(){
         mIvLikeStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -214,6 +247,9 @@ public class AudioMatchCallingController {
         });
     }
 
+    /**
+     * 点击like创建爱心并且执行发送动画
+     */
     private void createHeartAndSend(){
         final ImageView heartView = new ImageView(mRootView.getContext());
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
@@ -228,8 +264,8 @@ public class AudioMatchCallingController {
         final float middleX = startX + (endX - startX) / 2;
         final float middleY = endY - dp2px(56);
 
-        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f);
-        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        mHeartSendAnimator = ValueAnimator.ofFloat(0, 1f);
+        mHeartSendAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float fraction = animation.getAnimatedFraction();
@@ -241,16 +277,16 @@ public class AudioMatchCallingController {
                 heartView.invalidate();
             }
         });
-        valueAnimator.addListener(new AnimatorListenerAdapter() {
+        mHeartSendAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 parentView.removeView(heartView);
             }
         });
-        valueAnimator.setInterpolator(mLinearInterpolator);
-        valueAnimator.setDuration(1440);
-        valueAnimator.start();
+        mHeartSendAnimator.setInterpolator(mLinearInterpolator);
+        mHeartSendAnimator.setDuration(1440);
+        mHeartSendAnimator.start();
 
         scaleAnima(heartView, 0.3f, 1.0f, mLinearInterpolator, 440, 0, new Runnable() {
             @Override
@@ -266,6 +302,9 @@ public class AudioMatchCallingController {
         });
     }
 
+    /**
+     * 点击背景创建流星
+     */
     private void initTouchMeteorCreated(){
         mRootView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -289,7 +328,10 @@ public class AudioMatchCallingController {
     }
 
 
-    private void avatartTranslateAnima(){
+    /**
+     * 连接建立后，头像位移动画
+     */
+    private void avatarTranslateAnima(){
         mMyAvatarView.animate()
                 .translationX(-mMyAvatarView.getX() + mMyNameView.getX() - mMyAvatarView.getWidth() / 2 + mMyNameView.getWidth() / 2)
                 .translationY(mMyAvatarView.getY() - mMyNameView.getY() - mMyAvatarView.getHeight() - dp2px(20))
@@ -316,6 +358,16 @@ public class AudioMatchCallingController {
 
     }
 
+    /**
+     * 辅助透明度变化view
+     * @param view          执行的view
+     * @param startAlpha    起始透明度
+     * @param endAlpha      结束透明度
+     * @param interpolator  插值器
+     * @param duration      动画时长
+     * @param delayTime     动画开始延时时长
+     * @param endAction     动画结束回调
+     */
     private void alphaAnima(View view, float startAlpha, float endAlpha, Interpolator interpolator, int duration, int delayTime, Runnable endAction){
         if(startAlpha != endAlpha){
             view.setAlpha(startAlpha);
@@ -323,6 +375,16 @@ public class AudioMatchCallingController {
         }
     }
 
+    /**
+     * 辅助缩放动画
+     * @param view          执行的view
+     * @param startScale    起始大小
+     * @param endScale      结束大小
+     * @param interpolator  插值器
+     * @param duration      动画时长
+     * @param delayTime     动画开始延时时长
+     * @param endAction     动画结束回调
+     */
     private void scaleAnima(View view, float startScale, float endScale, Interpolator interpolator, int duration, int delayTime, Runnable endAction){
         if(startScale != endScale){
             view.setScaleX(startScale);
@@ -331,6 +393,17 @@ public class AudioMatchCallingController {
         }
     }
 
+    /**
+     * 创建单个流星view并执行动画
+     * @param startX        流星起始x位置
+     * @param startY        流星起始y位置
+     * @param endX          流星结束x位置
+     * @param endY          流星结束y位置
+     * @param scale         流星缩放比例
+     * @param totalTime     流星运动总时长
+     * @param firstOpacity  第一次透明度变化结束时间
+     * @param secondOpacity 第二次透明度变化开始时间
+     */
     private void createMeteorAndAnima(float startX, float startY, float endX, float endY, float scale, final int totalTime, final int firstOpacity, final int secondOpacity){
         startX = dp2px(startX);
         startY = getScreenHeight() - dp2px(startY);
