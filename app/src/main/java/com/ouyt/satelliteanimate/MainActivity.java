@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
     private View mRootView;
     private AudioMatchLightController mLightController;
     private AudioMatchConnectingController mConnectingController;
+    private AudioMatchCallingController mCallingController;
 
     private Handler handler = new Handler();
 
@@ -26,41 +27,51 @@ public class MainActivity extends AppCompatActivity {
         mSatelliteController = new AudioMatchSatelliteController(mSatelliteContainer);
         mLightController = new AudioMatchLightController(mRootView, handler);
         mConnectingController = new AudioMatchConnectingController(mRootView, handler);
+        mCallingController = new AudioMatchCallingController(mRootView);
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        mSatelliteContainer.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                mSatelliteController.startAllTrackAnim();
-//                mLightController.startBeforMatchAnima();
-//                //ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mSatelliteContainer.getLayoutParams();
-//                //mSatelliteController.startTrackAnim(mSatelliteContainer.getX(), mSatelliteContainer.getY(), 274, 134);
-//
-//            }
-//        });
-//        mSatelliteContainer.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                mLightController.startMatchingAnima();
-//            }
-//        }, 5000);
-//        mSatelliteContainer.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                mLightController.stopAllAnimaAndHide();
-//                mSatelliteController.stopAllTrackAnimAndHide();
-//            }
-//        }, 15000);
-        mRootView.post(new Runnable() {
+/*        mSatelliteContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mSatelliteController.startAllTrackAnim();
+                mLightController.startBeforMatchAnima();
+                //ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mSatelliteContainer.getLayoutParams();
+                //mSatelliteController.startTrackAnim(mSatelliteContainer.getX(), mSatelliteContainer.getY(), 274, 134);
+
+            }
+        });
+        mSatelliteContainer.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mLightController.startMatchingAnima();
+            }
+        }, 5000);
+        mSatelliteContainer.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mLightController.stopAllAnimaAndHide();
+                mSatelliteController.stopAllTrackAnimAndHide();
+            }
+        }, 15000);*/
+
+/*        mRootView.post(new Runnable() {
             @Override
             public void run() {
                 mConnectingController.startConnectingAnima();
             }
+        });*/
+
+        mRootView.post(new Runnable() {
+            @Override
+            public void run() {
+                mCallingController.startCallingAnima();
+            }
         });
+
     }
 
     @Override

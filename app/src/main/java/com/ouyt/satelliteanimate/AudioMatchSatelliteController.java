@@ -70,7 +70,7 @@ public class AudioMatchSatelliteController {
 
     public void stopAllTrackAnimAndHide(){
         for(ValueAnimator valueAnimator : mValueAnimatorList){
-            if(valueAnimator != null){
+            if(valueAnimator != null && valueAnimator.isRunning()){
                 valueAnimator.cancel();
             }
         }

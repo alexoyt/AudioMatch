@@ -49,6 +49,8 @@ public class AudioMatchConnectingController {
                 AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
                 scaleAndAlphaAnima(mCountTimeView, 2f, 1f, interpolator, 0f, 1f, mLinearInterpolator, 320);
                 handler.postDelayed(this, 1000);
+            } else {
+                stopAnimaAndHide();
             }
             mCountTime--;
         }
@@ -189,11 +191,15 @@ public class AudioMatchConnectingController {
         mValueAnimatorList.add(valueAnimator);
     }
 
-    public void stopAllAnima(){
+    public void stopAnimaAndHide(){
         mRippleAlphaAnimator.cancel();
         mRippleScaleAnimator.cancel();
+        mCountTimeView.setVisibility(View.GONE);
+        mConnectingTipsView.setVisibility(View.GONE);
+        AccelerateDecelerateInterpolator interpolator = new AccelerateDecelerateInterpolator();
+        scaleAndAlphaAnima(mSatelliteContainer, 1f, 1.6f, interpolator, 1f, 0f ,mLinearInterpolator, 200);
         for(ValueAnimator valueAnimator : mValueAnimatorList){
-            if(valueAnimator != null){
+            if(valueAnimator != null && valueAnimator.isRunning()){
                 valueAnimator.cancel();
             }
         }

@@ -5,6 +5,17 @@
     android:clipChildren="false"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
+    <ImageView
+        android:id="@+id/audio_match_big_planet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bg_audio_match_big_planet"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="@id/audio_match_other_avatar"
+        android:visibility="visible"
+        />
+
     <ImageView
         android:id="@+id/audio_match_avatar_ripple"
         android:layout_width="305dp"
@@ -120,4 +131,69 @@
             android:src="@drawable/icon_audio_match_planet_orange" />
 
     </FrameLayout>
+
+
+    <TextView
+        android:id="@+id/audio_match_my_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Me"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:layout_marginLeft="98dp"
+        android:layout_marginStart="98dp"
+        android:layout_marginBottom="422.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/audio_match_my_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="America"
+        android:textSize="10sp"
+        android:textColor="#A3B4DD"
+        android:layout_marginTop="3dp"
+        app:layout_constraintTop_toBottomOf="@id/audio_match_my_name"
+        app:layout_constraintLeft_toLeftOf="@id/audio_match_my_name"
+        app:layout_constraintStart_toStartOf="@id/audio_match_my_name"
+        app:layout_constraintRight_toRightOf="@id/audio_match_my_name"
+        app:layout_constraintEnd_toEndOf="@id/audio_match_my_name"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/audio_match_other_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bigoer"
+        android:textSize="13sp"
+        android:textColor="@color/white"
+        android:layout_marginRight="98dp"
+        android:layout_marginEnd="98dp"
+        android:layout_marginBottom="422.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/audio_match_other_country"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brazil"
+        android:textSize="10sp"
+        android:textColor="#A3B4DD"
+        android:layout_marginTop="3dp"
+        app:layout_constraintTop_toBottomOf="@id/audio_match_other_name"
+        app:layout_constraintLeft_toLeftOf="@id/audio_match_other_name"
+        app:layout_constraintStart_toStartOf="@id/audio_match_other_name"
+        app:layout_constraintRight_toRightOf="@id/audio_match_other_name"
+        app:layout_constraintEnd_toEndOf="@id/audio_match_other_name"
+        android:visibility="invisible"
+        />
 </android.support.constraint.ConstraintLayout>

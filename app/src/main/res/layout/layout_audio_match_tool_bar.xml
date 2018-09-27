@@ -43,6 +43,7 @@
         android:layout_width="34dp"
         android:layout_height="wrap_content"
         android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
         android:layout_marginTop="14dp"
         android:src="@drawable/icon_audio_random_history"
         app:layout_constraintRight_toLeftOf="@+id/audio_random_profile"
