@@ -18,7 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AudioMatchConnectingController {
+public class AudioMatchConnectController {
 
     private static final String TAG = "ConnectingController";
 
@@ -56,7 +56,7 @@ public class AudioMatchConnectingController {
         }
     };
 
-    public AudioMatchConnectingController(View rootView, Handler handler){
+    public AudioMatchConnectController(View rootView, Handler handler){
         mRootView = rootView;
         this.handler = handler;
         mLinearInterpolator = new LinearInterpolator();

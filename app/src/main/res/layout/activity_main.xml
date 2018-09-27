@@ -42,7 +42,7 @@
         />
 
     <include
-        layout="@layout/layout_audio_match_connecting"/>
+        layout="@layout/layout_audio_match_connect"/>
 
     <TextView
         android:id="@+id/audio_random_start"

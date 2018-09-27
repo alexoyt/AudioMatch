@@ -1,10 +1,8 @@
 package com.ouyt.satelliteanimate;
 
 import android.os.Handler;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,7 +11,7 @@ public class MainActivity extends AppCompatActivity {
     private View mSatelliteContainer;
     private View mRootView;
     private AudioMatchLightController mLightController;
-    private AudioMatchConnectingController mConnectingController;
+    private AudioMatchConnectController mConnectingController;
     private AudioMatchCallingController mCallingController;
 
     private Handler handler = new Handler();
@@ -26,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         mSatelliteContainer = findViewById(R.id.satellite_container);
         mSatelliteController = new AudioMatchSatelliteController(mSatelliteContainer);
         mLightController = new AudioMatchLightController(mRootView, handler);
-        mConnectingController = new AudioMatchConnectingController(mRootView, handler);
+        mConnectingController = new AudioMatchConnectController(mRootView, handler);
         mCallingController = new AudioMatchCallingController(mRootView, handler);
 
     }
