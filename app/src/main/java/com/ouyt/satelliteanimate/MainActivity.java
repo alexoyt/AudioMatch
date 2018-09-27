@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         mSatelliteController = new AudioMatchSatelliteController(mSatelliteContainer);
         mLightController = new AudioMatchLightController(mRootView, handler);
         mConnectingController = new AudioMatchConnectingController(mRootView, handler);
-        mCallingController = new AudioMatchCallingController(mRootView);
+        mCallingController = new AudioMatchCallingController(mRootView, handler);
 
     }
 
