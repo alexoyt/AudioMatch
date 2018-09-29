@@ -3,6 +3,7 @@ package com.ouyt.satelliteanimate;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.os.Build;
 import android.os.Handler;
 import android.support.constraint.ConstraintLayout;
 import android.view.View;
@@ -150,6 +151,7 @@ public class AudioMatchCallingController {
         mBigPlanetView = mRootView.findViewById(R.id.audio_match_big_planet);
         mScatteredPlanetView = mRootView.findViewById(R.id.audio_match_scattered_planet);
         mCloseView = mRootView.findViewById(R.id.audio_match_close);
+        mMatchSuccessTips = mRootView.findViewById(R.id.audio_random_match);
     }
 
     public void stopCallingAnima(){
@@ -175,7 +177,7 @@ public class AudioMatchCallingController {
         scaleAnima(mIvLikeStatus, 0f ,1f, new DecelerateInterpolator(), 600, 0, null);
         scaleAnima(mTvLikeStatus, 0f ,1f, new DecelerateInterpolator(), 600, 0, null);
 
-        avatarTranslateAnima();
+        avatarMatchSuccessAnima();
 
         Animation animation = AnimationUtils.loadAnimation(mBigPlanetView.getContext(), R.anim.audio_match_big_planet);
         mBigPlanetView.startAnimation(animation);   //加载大星球旋转缩放变换动画
@@ -185,6 +187,45 @@ public class AudioMatchCallingController {
         initTouchMeteorCreated();
         initLikeStatusAnima();
         //handler.post(mShowSuccessHeartRunnable);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startMultiLikeAnima();
+            }
+        }, 3000);
+    }
+
+    private TextView mMatchSuccessTips;
+    public void startMultiLikeAnima(){
+        if(mHeartSendAnimator != null && mHeartSendAnimator.isRunning()){
+            mHeartSendAnimator.cancel();
+        }
+        mCountTime.setVisibility( View.INVISIBLE);
+        mMatchSuccessTips.setVisibility( View.VISIBLE);
+        mIvLikeStatus.setImageResource(R.drawable.icon_audio_random_hang_up);
+        mTvLikeStatus.setText("Hang up");
+        mBigPlanetView.animate().scaleX(1.5f).scaleY(1.5f).translationYBy(dp2px(200)).start();
+        avatarMultiLikeAnima();
+        handler.post(mShowSuccessHeartRunnable);
+    }
+
+    private void avatarMultiLikeAnima(){
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mMyNameView.getLayoutParams();
+        float offsetX;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1){
+            offsetX = (layoutParams.getMarginEnd() - dp2px(99)) / 2;
+            layoutParams.setMarginEnd((int)dp2px(99));
+        } else {
+            offsetX = (layoutParams.rightMargin - dp2px(99)) / 2;
+            layoutParams.rightMargin = (int)dp2px(99);
+        }
+        mMyNameView.setLayoutParams(layoutParams);
+        mMyAvatarView.animate().translationXBy(offsetX).translationYBy(dp2px(40)).setDuration(0).start();
+        mOtherAvatarView.animate().translationXBy(-offsetX).translationYBy(dp2px(40)).setDuration(0).start();
+        mMyNameView.animate().translationYBy(dp2px(40)).setDuration(0).start();
+        mOtherNameView.animate().translationYBy(dp2px(40)).setDuration(0).start();
+        mMyCountryView.animate().translationYBy(dp2px(40)).setDuration(0).start();
+        mOtherCountryView.animate().translationYBy(dp2px(40)).setDuration(0).start();
     }
 
     /**
@@ -331,7 +372,7 @@ public class AudioMatchCallingController {
     /**
      * 连接建立后，头像位移动画
      */
-    private void avatarTranslateAnima(){
+    private void avatarMatchSuccessAnima(){
         mMyAvatarView.animate()
                 .translationX(-mMyAvatarView.getX() + mMyNameView.getX() - mMyAvatarView.getWidth() / 2 + mMyNameView.getWidth() / 2)
                 .translationY(mMyAvatarView.getY() - mMyNameView.getY() - mMyAvatarView.getHeight() - dp2px(20))
